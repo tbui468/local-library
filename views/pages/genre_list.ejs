@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <ul>
+      <% for(let i = 0; i < genres_list.length; i++) { %>
+        <li>
+          <a href="<%= genres_list[i].url %>"><%= genres_list[i].name %></a>
+        </li> 
+      <% } %>
+      <% if(genres_list.length === 0) { %>
+        <p>There are no genres in this list</p>
+      <% } %>
+    </ul>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>

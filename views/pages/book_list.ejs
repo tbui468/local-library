@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <ul>
+      <% //book_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;}); %>
+      <% for(let i = 0; i < book_list.length; i++) { %>
+        <li>
+          <a href="<%= book_list[i].url %>"><%= book_list[i].title %></a><p><%= book_list[i].author.name %></p>
+        </li> 
+      <% } %>
+      <% if(book_list.length === 0) { %>
+        <p>There are no books in this list</p>
+      <% } %>
+    </ul>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>

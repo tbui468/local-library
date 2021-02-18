@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <h2><%= genre.name %></h2>
+    <ul>
+      <% for(let i = 0; i < genre_books.length; i++) { %>
+        <a href="<%=genre_books[i].url%>"><%=genre_books[i].title%></a>
+        <p><%=genre_books[i].summary%></p>
+        <br/>
+      <% } %>
+    </ul>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>

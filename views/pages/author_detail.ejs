@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1>Author: <%= author.name %></h1>
+    <p><%= author.lifespan %></p>
+    <h3>Books</h3>
+    <ul>
+      <% for(let i = 0; i < book_list.length; i++) { %>
+        <li>
+          <a href="<%= book_list[i].url %>"><%= book_list[i].title %></a>
+          <p><%= book_list[i].summary %></p>
+        </li> 
+        <br/>
+      <% } %>
+      <% if(book_list.length === 0) { %>
+        <p>This author has no books</p>
+      <% } %>
+    </ul>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>

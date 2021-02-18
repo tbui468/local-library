@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <ul>
+      <% for(let i = 0; i < authors_list.length; i++) { %>
+        <li>
+          <a href="<%= authors_list[i].url %>"><%= authors_list[i].name %></a>
+          <p><%= authors_list[i].lifespan %></p>
+        </li> 
+      <% } %>
+      <% if(authors_list.length === 0) { %>
+        <p>There are no authors in this list</p>
+      <% } %>
+    </ul>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>

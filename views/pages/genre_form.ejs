@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+      <h1><%= title %></h1>
+      <form action='' method='POST'>
+        <label for='name'>Genre:</label>
+        <% if(locals.genre) { %>
+          <input type='text' name='name' placeholder='Fantasy, Poetry, etc' value='<%=genre.name%>'/>
+          <% }else{ %>
+          <input type='text' name='name' placeholder='Fantasy, Poetry, etc' value=''/>
+          <% } %>
+        <button type='submit'>Create</button>
+      </form>
+      <% if(locals.errors) { %>
+        <ul>
+          <% for(let i = 0; i < errors.length; i++) { %>
+            <li><%= errors[i].msg %></li>
+          <% } %>
+        </ul>
+      <% } %>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>

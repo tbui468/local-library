@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <h2>There are the following data in the library</h2>
+    <ul>
+      <li>Books: <%= data.book_count %></li>
+      <li>Book Instances: <%= data.book_instance_count %></li>
+      <li>Books Instances Available: <%= data.book_instance_available %></li>
+      <li>Authors: <%= data.author_count %></li>
+      <li>Genres: <%= data.genre_count %></li>
+    </ul>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>

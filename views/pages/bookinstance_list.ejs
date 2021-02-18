@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <ul>
+      <% for(let i = 0; i < bookinstance_list.length; i++) { %>
+        <li>
+          <a href="<%= bookinstance_list[i].url %>"><%= bookinstance_list[i].book.title %></a>
+          <p><%= bookinstance_list[i].imprint %></p>
+          <p><%= bookinstance_list[i].status %></p>
+          <% if(bookinstance_list[i].status != 'Available') { %>
+            <p><%= bookinstance_list[i].due_back_formatted %></p>
+          <% } %>
+        </li> 
+      <% } %>
+    </ul>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>
