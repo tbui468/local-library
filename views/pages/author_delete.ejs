@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <h3>Author: <%= author.name %></h3>
+    <p><%= author.lifespan %></p>
+  
+    <% if(locals.books && books.length > 0) { %>
+      <p>Delete all books belonging to this author before deleting author</p> 
+    <% }else{ %>
+      <p>Do you really want to delete this author?</p>
+      <form action='' method='POST'>
+        <input type='hidden' name='authorid' value='<%= author._id %>'/>
+        <button type='submit'>Delete Author</button>
+      </form>
+    <% } %>
+
+    <h3>Books</h3>
+    <ul>
+      <% for(let i = 0; i < books.length; i++) { %>
+        <li>
+          <a href="<%= books[i].url %>"><%= books[i].title %></a>
+          <p><%= books[i].summary %></p>
+        </li> 
+        <br/>
+      <% } %>
+      <% if(books.length === 0) { %>
+        <p>This author has no books</p>
+      <% } %>
+    </ul>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>

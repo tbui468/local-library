@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+      <h1><%= title %></h1>
+      <form action='' method='POST'>
+
+        <label for='book'>Book</label>
+        <select id='book' required='true' name='book' >
+          <% for(let i = 0; i < books.length; i++) { %>
+            <option value='<%= books[i]._id %>' <%= (locals.bookinstance && locals.bookinstance.book) ? bookinstance.book._id.toString() === books[i]._id.toString() ? 'selected' : '' : '' %>>
+              <% (locals.bookinstance && locals.bookinstance.book) ? console.log(bookinstance.book._id) : console.log('no book') %>
+              <% console.log(books[i]._id)%>
+              <% console.log('-----------')%>
+              <%= books[i].title %>
+            </option>
+          <% } %>
+        </select><br/><br/>
+
+        <label for='imprint'>Imprint</label>
+        <input id='imprint' type='text' required='true' name='imprint' value='<%= locals.bookinstance ? bookinstance.imprint : '' %>'/><br/><br/>
+
+        <label for='due_back'>Date when book available</label>
+        <input id='due_back' type='date' name='due_back' value='<%= locals.bookinstance ? bookinstance.due_back ? bookinstance.due_back.toISOString().substring(0, 10) : '' : '' %>'/>
+        <br/><br/>
+
+        <label for='status'>Status</label>
+        <select id='status' name='status' required='true'>
+          <% for(let i = 0; i < statuses.length; i++) { %>
+            <option value='<%= statuses[i] %>' <%= locals.bookinstance ? bookinstance.status === statuses[i] ? "selected" : "" : "" %>><%= statuses[i] %></option>
+          <% } %>
+        </select><br/><br/>
+        <button type='submit'>Add Copy</button>
+      </form>
+      <% if(locals.errors) { %>
+        <ul>
+          <% for(let i = 0; i < errors.length; i++) { %>
+            <li><%= errors[i].msg %></li>
+          <% } %>
+        </ul>
+      <% } %>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>
