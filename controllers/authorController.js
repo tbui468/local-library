@@ -45,59 +45,30 @@ exports.author_create_get = function(req, res) {
   res.render('author_form', { title: 'Add author' } );
 }
 
-/*
-  body('name', 'Genre name required').trim().isLength({min: 1}).escape(), //first function
-  (req, res, next) => { //second function
-    //extract validation errors from a request
-    const errors = validationResult(req);
-    //create Genre object using sanitised data
-    let genre = new Genre(
-      { name: req.body.name }
-    );
-
-    if(!errors.isEmpty()) {
-      //resend forms with errors/sanitized values
-      res.render('genre_form', { title: 'Create Genre', genre: genre, errors: errors.array()});
-      return;
-    }else{
-      //check if genre alread exists in database,
-      //if not, add to database
-      Genre.findOne({'name': req.body.name})
-        .exec(function(err, found_genre) {
-          if(err) { return next(err); }
-
-          if(found_genre) {
-            res.redirect(found_genre.url);
-          }else{
-            genre.save(function(err) { //save the genre instance we created to database
-              if(err) { return next(err); }
-              res.redirect(genre.url);
-            });
-          }
-        });
-    }
-  }*/
 
 exports.author_create_post = [
-  //validate inputs
-  body('family_name', 'Family name required').trim().isLength({min: 1}).escape(),
-  body('first_name', 'First name required').trim().isLength({min: 1}).escape(),
+  //validate inputs - the first parameter we put into body matches 'name' attribute in html form
+  body('family_name').trim().isLength({min: 1}).escape().withMessage('Family name must be specified.')
+    .isAlphanumeric().withMessage('Family name contains non-alphanumeric characters.'),
+  body('first_name').trim().isLength({min: 1}).escape().withMessage('First name must be specified.')
+    .isAlphanumeric().withMessage('First name contains non-alphanumeric characters.'),
+  body('date_of_birth', 'Invalid date of birth').optional({checkFalsy: true}).isISO8601().toDate(),
+  body('date_of_death', 'Invalid date of death').optional({checkFalsy: true}).isISO8601().toDate(),
   (req, res, next) => {
     const errors = validationResult(req);
-    //if validation failed, return form (with new default inputs)
-    //create Author object now bc I may want to update forms with incorrect answers user put in as feedback
-    let author = new Author({
-      family_name: req.body.family_name,
-      first_name: req.body.first_name,
-      date_of_birth: new Date(), //temp
-      date_of_death: new Date()
-    }); //temp
     
     if(!errors.isEmpty()) {
-      res.render('author_form', { title: 'Add Author', author: author, errors: errors.array()});
+      res.render('author_form', { title: 'Add Author', author: req.body, errors: errors.array()});
       return;
     }else{
       //for now, allow duplicates of authors
+      let author = new Author({
+        family_name: req.body.family_name,
+        first_name: req.body.first_name,
+        date_of_birth: req.body.date_of_birth,
+        date_of_death: req.body.date_of_death
+      }); 
+
       author.save(function(err) {
         if(err) { return next(err); }
         res.redirect(author.url);

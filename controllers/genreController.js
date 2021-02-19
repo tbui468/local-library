@@ -49,14 +49,10 @@ exports.genre_create_post = [
   (req, res, next) => { //second function
     //extract validation errors from a request
     const errors = validationResult(req);
-    //create Genre object using sanitised data
-    let genre = new Genre(
-      { name: req.body.name }
-    );
 
     if(!errors.isEmpty()) {
       //resend forms with errors/sanitized values
-      res.render('genre_form', { title: 'Create Genre', genre: genre, errors: errors.array()});
+      res.render('genre_form', { title: 'Create Genre', genre: req.body.name, errors: errors.array()});
       return;
     }else{
       //check if genre alread exists in database,
@@ -68,6 +64,9 @@ exports.genre_create_post = [
           if(found_genre) {
             res.redirect(found_genre.url);
           }else{
+            let genre = new Genre(
+              { name: req.body.name }
+            );
             genre.save(function(err) { //save the genre instance we created to database
               if(err) { return next(err); }
               res.redirect(genre.url);

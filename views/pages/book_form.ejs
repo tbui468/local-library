@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+      <h1><%= title %></h1>
+      <form action='' method='POST'>
+        <label for='title'>Title:</label><br/>
+        <input type='text' id='title' name='title' value='<%= locals.book ? book.title : '' %>'/><br/><br/>
+
+        <label for='author'>Author:</label><br/>
+        <select id='author' name='author_id'/><br/>
+          <% for(let i = 0; i < author_list.length; i++) { %>
+            <option value='<%= author_list[i]._id %>' <%= locals.book ? book.author._id.toString() === author_list[i]._id.toString() ? "selected" : "" : "" %>><%= author_list[i].name %></option>
+          <% } %>
+        </select><br/><br/>
+
+        <label for='summary'>Summary:</label><br/>
+        <textarea type='text' id='summary' name='summary' rows='4' cols='50' value='<%= locals.book ? book.summary : '' %>'/>
+        </textarea><br/><br/>
+
+        <label for='isbn'>ISBN:</label><br/>
+        <input type='text' id='isbn' name='isbn' value='<%= locals.book ? book.isbn : '' %>'/><br/><br/>
+
+        <p>Genre:</p>
+        <% for(let i = 0; i < genre_list.length; i++) { %>
+          <input type='checkbox' name='genre' id='<%= genre_list[i]._id %>' value='<%= genre_list[i]._id %>' <%= genre_list[i].checked === "true" ? "checked" : "" %>/>
+          <label for='<%= genre_list[i]._id %>'><%= genre_list[i].name %></label>
+        <% } %><br/><br/>
+
+        <button type='submit'>Create</button>
+      </form>
+      <% if(locals.errors) { %>
+        <ul>
+          <% for(let i = 0; i < errors.length; i++) { %>
+            <li><%= errors[i].msg %></li>
+          <% } %>
+        </ul>
+      <% } %>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>
