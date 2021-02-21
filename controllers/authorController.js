@@ -98,7 +98,6 @@ exports.author_delete_get = function(req, res, next) {
 
 //need to check authorid sent by form
 exports.author_delete_post = function(req, res, next) {
-  console.log(req.body.authorid);
   async.parallel({
     author: function(callback) {
       Author.findById(req.body.authorid).exec(callback);
@@ -125,7 +124,7 @@ exports.author_update_get = function(req, res, next) {
   Author.findById(req.params.id)
   .exec(function(err, author) {
     if(err) { return next(err); }
-    res.render('author_form', { title: 'Edit author', author: author});
+    res.render('author_form', { title: 'Edit author', author: author });
   });
 }
 

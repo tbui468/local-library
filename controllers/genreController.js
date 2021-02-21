@@ -1,8 +1,8 @@
 const Genre = require('../models/genre');
 const Book = require('../models/book');
 const async = require('async');
-const { body, validationResult } = require('express-validator');
-/*//same as:
+const { body, validationResult } = require('express-validator'); 
+/*//same as: //so it's skipping saving an intermediate instance of express-validator
   const validator = require('express-validator');
   const body = validator.body();
   const validationResult = validator.validationResults();
@@ -77,18 +77,59 @@ exports.genre_create_post = [
   }
 ];
 
-exports.genre_delete_get = function(req, res) {
-  res.send('NOT IMPLEMENTED: Author list');
+
+exports.genre_delete_get = function(req, res, next) {
+  Genre.findById(req.params.id)
+    .exec(function(err, genre) {
+      if(err) { return next(err); }
+      if(genre == null) {
+        let err = new Error('Genre not found');
+        err.status = 404;
+        return next(err);
+      }
+      res.render('genre_delete', { title: 'Delete Genre', genre: genre });
+    });
 }
 
-exports.genre_delete_post = function(req, res) {
-  res.send('NOT IMPLEMENTED: Author list');
+//don't need to worry about books that have genre listed since referenced genres aren't requireda
+//whereas author is required for a book, so can't delete author without deleting books referencing that author first
+exports.genre_delete_post = function(req, res, next) {
+  Genre.findByIdAndRemove(req.body.genreid, function(err) {
+    if(err) { return next(err); }
+    res.redirect('/catalog/genres');
+  });
 }
 
-exports.genre_update_get = function(req, res) {
-  res.send('NOT IMPLEMENTED: Author list');
+exports.genre_update_get = function(req, res, next) {
+  Genre.findById(req.params.id)
+    .exec(function(err, genre) {
+      if(err) { return next(err); }
+      if(genre == null) {
+        let err = new Error('Genre not found');
+        err.status = 404;
+        return next(err);
+      }
+      res.render('genre_form', { title: 'Edit Genre', genre: genre });
+    });
 }
 
-exports.genre_update_post = function(req, res) {
-  res.send('NOT IMPLEMENTED: Author list');
-}
+exports.genre_update_post = [
+  //validate
+  body('name', 'Genre name must be specified').trim().isLength({min: 1}).escape(),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    const genre = new Genre({
+      name: req.body.name,
+      _id: req.params.id //need this on all updates, otherwise mongodb will assign it a new internal id
+    });
+
+    if(!errors.isEmpty()) {
+      res.render('genre_form', { title: 'Edit Genre', genre: genre, errors: errors.array()});
+    }else{
+      Genre.findByIdAndUpdate(req.params.id, genre, {}, function(err, updatedgenre) {
+        if(err) { return next(err); }
+        res.redirect(updatedgenre.url);
+      });
+    }
+  }
+];

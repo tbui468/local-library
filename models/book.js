@@ -7,7 +7,7 @@ let BookSchema = new Schema(
     author: {type: Schema.Types.ObjectId, ref: 'Author', required: true},
     summary: {type: String, required: true},
     isbn: {type: String, required: true},
-    genre: [{type: Schema.Types.ObjectId, ref: 'Genre'}] //this is an array of mongoDB ids (belonging to genre entries)
+    genre: [{type: Schema.Types.ObjectId, ref: 'Genre'}] //this is an array of mongoDB ids (belonging to genre entries).  Don't need to worry about deleting genres since it's optional
   }
 );
 

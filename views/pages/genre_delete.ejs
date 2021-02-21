@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <h3>Genre: <%= genre.name %></h3>
+
+    <p>Do you really want to delete this genre?</p>
+    <form action='' method='POST'>
+      <input type='hidden' name='genreid' value='<%= genre._id %>'/>
+      <button type='submit'>Delete Genre</button>
+    </form>
+
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>
