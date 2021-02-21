@@ -161,12 +161,46 @@ exports.book_create_post = [
   }
 ];
 
-exports.book_delete_get = function(req, res) {
-  res.send('NOT IMPLEMENTED: Author list');
+exports.book_delete_get = function(req, res, next) {
+  //get book and list of bookinstances, populate and return
+  async.parallel({
+    book: function(callback) {
+      Book.findById(req.params.id).exec(callback);
+    }, 
+    bookinstances: function(callback) {
+      BookInstance.find({ 'book': req.params.id }).exec(callback);
+    }
+  }, function(err, results) {
+    if(err) { return next(err); }
+    res.render('book_delete', { title: 'Delete Book', book: results.book, bookinstances: results.bookinstances });
+  });
 }
 
-exports.book_delete_post = function(req, res) {
-  res.send('NOT IMPLEMENTED: Author list');
+//why can't we use req.params.id (and using req.body.bookid)
+exports.book_delete_post = function(req, res, next) {
+  async.parallel({
+    book: function(callback) {
+      Book.findById(req.params.id).exec(callback);
+    }, 
+    bookinstances: function(callback) {
+      BookInstance.find({ 'book': req.params.id }).exec(callback);
+    }
+  }, function(err, results) {
+      if(err) { return next(err); }
+      if(results.book == null) {
+        let err = new Error('Book not found');
+        err.status = 404;
+        return next(err);
+      }
+      if(results.bookinstances.length > 0) {
+        res.render('book_delete', { title: 'Delete Book', book: results.book, bookinstances: results.bookinstances });
+      }else{
+        Book.findByIdAndRemove(req.params.id, function(err) {
+          if(err) { return next(err); }
+          res.redirect('/catalog/books');
+        });
+      }
+  });
 }
 
 exports.book_update_get = function(req, res, next) {
@@ -226,63 +260,63 @@ exports.book_update_post = [
     next();
   }, 
 
-    body('title', 'Book must have a title').trim().isLength({ min: 1}).escape(),
-    body('summary', 'Book must have a summary').trim().isLength({ min: 1}).escape(),
-    body('isbn', 'Book must have an isbn').trim().isLength({min: 1}).escape(),
-    body('author_id', 'Book must have an author').trim().isLength({min: 1}).escape(),
-    body('genre.*').escape(),
+  body('title', 'Book must have a title').trim().isLength({ min: 1}).escape(),
+  body('summary', 'Book must have a summary').trim().isLength({ min: 1}).escape(),
+  body('isbn', 'Book must have an isbn').trim().isLength({min: 1}).escape(),
+  body('author_id', 'Book must have an author').trim().isLength({min: 1}).escape(),
+  body('genre.*').escape(),
 
-    //update database
-    (req, res, next) => {
-      //make temp book entry to return if some errors are present in forms
-      //should really call this tempBook or something.  tempBook vs dbBook (one is saved in memory and other saved in database)
-      let book = new Book({
-        title: req.body.title,
-        author: req.body.author_id,
-        summary: req.body.summary,
-        isbn: req.body.isbn,
-        genre: req.body.genre,
-        _id: req.params.id //need this otherwise new id will be assigned
+  //update database
+  (req, res, next) => {
+    //make temp book entry to return if some errors are present in forms
+    //should really call this tempBook or something.  tempBook vs dbBook (one is saved in memory and other saved in database)
+    let book = new Book({
+      title: req.body.title,
+      author: req.body.author_id,
+      summary: req.body.summary,
+      isbn: req.body.isbn,
+      genre: req.body.genre,
+      _id: req.params.id //need this otherwise new id will be assigned
+    });
+
+    //check validation results
+    let errors = validationResult(req);
+
+    if(!errors.isEmpty()) {
+      async.parallel({
+        authors: function(callback) {
+          Author.find()
+            .sort([['family_name', 'ascending']])
+            .exec(callback);
+        }, 
+        genres: function(callback) {
+          Genre.find()
+            .sort([['name', 'ascending']])
+            .exec(callback);
+        }
+      }, function(err, results) {
+        if(err) { return next(err); }
+
+        //need to fill in genre.check values here
+        //looop through results.genre 
+        //check if id of that genre exists in book.genre (check value of index.  If > -1, then in array, else not present)
+        //compare genres in temp book entry with all genres
+        for(let i = 0; i < results.genres.length; i++) {
+          if(book.genre.indexOf(results.genres[i]._id) > -1) {
+            results.genres[i].checked = 'true';
+          }
+        }
+
+        res.render('book_form', { title: 'Edit Book', book: book, author_list: results.authors, genre_list: results.genres , errors: errors.array()});
       });
-
-      //check validation results
-      let errors = validationResult(req);
-
-      if(!errors.isEmpty()) {
-        async.parallel({
-          authors: function(callback) {
-            Author.find()
-              .sort([['family_name', 'ascending']])
-              .exec(callback);
-          }, 
-          genres: function(callback) {
-            Genre.find()
-              .sort([['name', 'ascending']])
-              .exec(callback);
-          }
-        }, function(err, results) {
-          if(err) { return next(err); }
-
-          //need to fill in genre.check values here
-          //looop through results.genre 
-          //check if id of that genre exists in book.genre (check value of index.  If > -1, then in array, else not present)
-          //compare genres in temp book entry with all genres
-          for(let i = 0; i < results.genres.length; i++) {
-            if(book.genre.indexOf(results.genres[i]._id) > -1) {
-              results.genres[i].checked = 'true';
-            }
-          }
-
-          res.render('book_form', { title: 'Edit Book', book: book, author_list: results.authors, genre_list: results.genres , errors: errors.array()});
-        });
-      }else{
-        //findByIdAndUpdate  (look at example on how to do this)
-        //find dbBook and replace with tempBook
-        Book.findByIdAndUpdate(req.params.id, book, {}, function(err, thebook) {
-          if(err) { return next(err); }
-          res.redirect(thebook.url);
-        });
-      }
+    }else{
+      //findByIdAndUpdate  (look at example on how to do this)
+      //find dbBook and replace with tempBook
+      Book.findByIdAndUpdate(req.params.id, book, {}, function(err, thebook) {
+        if(err) { return next(err); }
+        res.redirect(thebook.url);
+      });
     }
+  }
 
 ];

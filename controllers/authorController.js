@@ -96,7 +96,7 @@ exports.author_delete_get = function(req, res, next) {
   });
 }
 
-//need to check authorid sent by form
+//need to check authorid sent by form (why?)
 exports.author_delete_post = function(req, res, next) {
   async.parallel({
     author: function(callback) {

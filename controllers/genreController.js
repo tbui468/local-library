@@ -94,7 +94,8 @@ exports.genre_delete_get = function(req, res, next) {
 //don't need to worry about books that have genre listed since referenced genres aren't requireda
 //whereas author is required for a book, so can't delete author without deleting books referencing that author first
 exports.genre_delete_post = function(req, res, next) {
-  Genre.findByIdAndRemove(req.body.genreid, function(err) {
+  //Genre.findByIdAndRemove(req.body.genreid, function(err) { //why did tutorial do it this way???
+  Genre.findByIdAndRemove(req.params.id, function(err) {
     if(err) { return next(err); }
     res.redirect('/catalog/genres');
   });
