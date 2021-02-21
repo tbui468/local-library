@@ -9,6 +9,8 @@
     </head>
     <h1>Author: <%= author.name %></h1>
     <p><%= author.lifespan %></p>
+    <a href='<%= author.url %>/update'>edit author</a><br/>
+    <a href='<%= author.url %>/delete'>delete author</a>
     <h3>Books</h3>
     <ul>
       <% for(let i = 0; i < book_list.length; i++) { %>
@@ -22,7 +24,6 @@
         <p>This author has no books</p>
       <% } %>
     </ul>
-    <a href='<%= author.url %>/delete'>delete author</a>
     <footer>
       <%- include('../partials/footer'); %>
     </footer>

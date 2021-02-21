@@ -1,3 +1,5 @@
+//app.js is the root of it all
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -22,6 +24,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.set('views', path.join(__dirname, 'views', 'pages'));
 app.set('view engine', 'ejs');
 
+//app.use(... sets all the middleware i'll need)
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -49,4 +52,4 @@ app.use(function(err, req, res, next) {
   res.render('errors');
 });
 
-module.exports = app;
+module.exports = app; //is imported and used in bin/www.  that's where express sets up nodejs http library and sets server to listen on specified port

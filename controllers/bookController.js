@@ -169,10 +169,120 @@ exports.book_delete_post = function(req, res) {
   res.send('NOT IMPLEMENTED: Author list');
 }
 
-exports.book_update_get = function(req, res) {
-  res.send('NOT IMPLEMENTED: Author list');
+exports.book_update_get = function(req, res, next) {
+  async.parallel({
+    book: function(callback) {
+      Book.findById(req.params.id).exec(callback);
+    },
+    authors: function(callback) {
+      Author.find()
+        .sort([['family_name', 'ascending']])
+        .exec(callback);
+    },
+    genres: function(callback) {
+      Genre.find()
+        .sort([['name', 'ascending']])
+        .exec(callback);
+    }
+  }, function(err, results) {
+    if(err) { return next(err); }
+
+    //NEED THIS TO HANDLE WHEN DATA IS NOT FOUND!!!!  
+    //use this format on detail pages (index pages display all so not found is not possible (only empty array))
+    //create pages aren't reading from db, so also not needed
+    //delete, update populate from DB, so always need to check if query result returns anything or a null
+    if(results.book == null) {
+      let err = new Error('Book not found');
+      err.status = 404;
+      return next(err);
+    }
+
+    for(let i = 0; i < results.genres.length; i++) {
+      if(results.book.genre.indexOf(results.genres[i]._id) > -1) {
+        results.genres[i].checked = 'true'; //can we just do this????  Adding a field and value.  Doesn't exist otherwise
+      }
+    }
+    res.render('book_form', { title: 'Edit Book', book: results.book, author_list: results.authors, genre_list: results.genres });
+  });
 }
 
-exports.book_update_post = function(req, res) {
-  res.send('NOT IMPLEMENTED: Author list');
-}
+exports.book_update_post = [
+  // use entry.save() to create in database
+  // use Schema.findByIdAndRemove() to delete from database
+  // use Schema.findByIdAndUpdate() to update in database
+
+  //change checkboxes (all html attribute name='genre') to array
+  //seems like instanceof checks if for prototype (superclass) too
+  //whereas typeof only checks for specific type
+  //according to upvoted stackoverflow answer, use instanceof for custom/complex types and use typeof for built-in/primitive types
+  (req, res, next) => {
+    if(!(req.body.genre instanceof Array)) { //if not array, make it one
+      if(typeof req.body.genre === 'undefined') {
+        req.body.genre = []; //set to empty array
+      }else{
+        req.body.genre = new Array(req.body.genre); //make genre key-value pairs into array (req.body.genre is submitted to server as { 'genre'='science fiction', 'genre'='fantasy', ...})
+      }
+    }
+    next();
+  }, 
+
+    body('title', 'Book must have a title').trim().isLength({ min: 1}).escape(),
+    body('summary', 'Book must have a summary').trim().isLength({ min: 1}).escape(),
+    body('isbn', 'Book must have an isbn').trim().isLength({min: 1}).escape(),
+    body('author_id', 'Book must have an author').trim().isLength({min: 1}).escape(),
+    body('genre.*').escape(),
+
+    //update database
+    (req, res, next) => {
+      //make temp book entry to return if some errors are present in forms
+      //should really call this tempBook or something.  tempBook vs dbBook (one is saved in memory and other saved in database)
+      let book = new Book({
+        title: req.body.title,
+        author: req.body.author_id,
+        summary: req.body.summary,
+        isbn: req.body.isbn,
+        genre: req.body.genre,
+        _id: req.params.id //need this otherwise new id will be assigned
+      });
+
+      //check validation results
+      let errors = validationResult(req);
+
+      if(!errors.isEmpty()) {
+        async.parallel({
+          authors: function(callback) {
+            Author.find()
+              .sort([['family_name', 'ascending']])
+              .exec(callback);
+          }, 
+          genres: function(callback) {
+            Genre.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          }
+        }, function(err, results) {
+          if(err) { return next(err); }
+
+          //need to fill in genre.check values here
+          //looop through results.genre 
+          //check if id of that genre exists in book.genre (check value of index.  If > -1, then in array, else not present)
+          //compare genres in temp book entry with all genres
+          for(let i = 0; i < results.genres.length; i++) {
+            if(book.genre.indexOf(results.genres[i]._id) > -1) {
+              results.genres[i].checked = 'true';
+            }
+          }
+
+          res.render('book_form', { title: 'Edit Book', book: book, author_list: results.authors, genre_list: results.genres , errors: errors.array()});
+        });
+      }else{
+        //findByIdAndUpdate  (look at example on how to do this)
+        //find dbBook and replace with tempBook
+        Book.findByIdAndUpdate(req.params.id, book, {}, function(err, thebook) {
+          if(err) { return next(err); }
+          res.redirect(thebook.url);
+        });
+      }
+    }
+
+];

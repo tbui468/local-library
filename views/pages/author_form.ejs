@@ -16,12 +16,12 @@
         <input type='text' name='first_name' value='<%= locals.author ? author.first_name : '' %>'/>
         <br/>
         <label for='date_of_birth'>Date of Birth:</label>
-        <input type='date' name='date_of_birth' value='<%= locals.author ? author.date_of_birth : '' %>'/>
+        <input type='date' name='date_of_birth' value='<%= (locals.author && locals.author.date_of_birth) ? author.date_of_birth.toISOString().substring(0, 10) : '' %>'/>
         <br/>
         <label for='date_of_death'>Date of Death:</label>
-        <input type='date' name='date_of_death' value='<%= locals.author ? author.date_of_death : '' %>'/>
+        <input type='date' name='date_of_death' value='<%= (locals.author && locals.author.date_of_death) ? author.date_of_death.toISOString().substring(0, 10) : '' %>'/>
         <br/>
-        <button type='submit'>Create</button>
+        <button type='submit'>Submit</button>
       </form>
       <% if(locals.errors) { %>
         <ul>

@@ -20,7 +20,8 @@
         </select><br/><br/>
 
         <label for='summary'>Summary:</label><br/>
-        <textarea type='text' id='summary' name='summary' rows='4' cols='50' value='<%= locals.book ? book.summary : '' %>'/>
+        <textarea id='summary' name='summary' rows='4' cols='50'>
+          <%= locals.book ? book.summary : '' %>
         </textarea><br/><br/>
 
         <label for='isbn'>ISBN:</label><br/>
