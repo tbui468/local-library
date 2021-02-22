@@ -35,7 +35,7 @@
             <option value='<%= statuses[i] %>' <%= locals.bookinstance ? bookinstance.status === statuses[i] ? "selected" : "" : "" %>><%= statuses[i] %></option>
           <% } %>
         </select><br/><br/>
-        <button type='submit'>Add Copy</button>
+        <button type='submit'>Submit</button>
       </form>
       <% if(locals.errors) { %>
         <ul>

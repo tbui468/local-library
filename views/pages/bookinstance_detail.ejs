@@ -8,6 +8,9 @@
       <%- include('../partials/header'); %>
     </head>
     <h1>Id: <%= book_instance._id %></h1>
+    <a href='<%= book_instance.url %>/update'>edit book instance</a><br/>
+    <a href='<%= book_instance.url %>/delete'>delete book instance</a><br/>
+    <h3>Book</h3>
     <a href="<%=book_instance.book.url%>"><%= book_instance.book.title %></a>
     <p>Imprint: <%= book_instance.imprint %></p>
     <p>Status: <%= book_instance.status %></p>

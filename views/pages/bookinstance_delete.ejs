@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <head>
+      <%- include('../partials/header'); %>
+    </head>
+    <h1><%= title %></h1>
+    <p>Book: <%= bookinstance.book.title %></p> 
+    <p>Imprint: <%= bookinstance.imprint %></p> 
+    <p>Status: <%= bookinstance.status %></p> 
+    <p>Due date: <%= bookinstance.due_back_formatted %></p> 
+    <form action='' method='POST'>
+      <button type='submit'>Delete book instance</button>
+    </form>
+    <footer>
+      <%- include('../partials/footer'); %>
+    </footer>
+  </body>
+</html>
